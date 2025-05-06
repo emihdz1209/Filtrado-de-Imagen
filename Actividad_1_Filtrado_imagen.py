@@ -17,10 +17,10 @@ def filter_and_read(img):
 
     #Filtramos valores de negros, setting pixeles con una intensidad MINUMA de 134 a 255
     thresh_val = 134
-    _, bw = cv.threshold(gray, thresh_val, 255, cv.THRESH_BINARY_INV)
+    _, mascara_binaria = cv.threshold(gray, thresh_val, 255, cv.THRESH_BINARY_INV)
 
     #Aplicamos gausian blur de 31x31 para deshacernos de la presencia de letras pequeñas (Darwinismo)
-    blurred = cv.GaussianBlur(bw, (31, 31), 0)
+    blurred = cv.GaussianBlur(mascara_binaria, (31, 31), 0)
 
     #Reaplicamos filtro
     _, final_mask = cv.threshold(blurred, 50, 255, cv.THRESH_BINARY)
@@ -28,7 +28,7 @@ def filter_and_read(img):
     #Slideshow de progreso
     cv.imshow("Original", img)
     cv.waitKey(0)
-    cv.imshow("Blanco y Negro", bw)
+    cv.imshow("Blanco y Negro", mascara_binaria)
     cv.waitKey(0)
     cv.imshow("Filtro Gaussiano", blurred)
     cv.waitKey(0)
@@ -49,19 +49,19 @@ def filter_and_read(img):
     else:
         print("".join(letters))
         
-img = cv.imread("placa_q.jpg")
-img2 = cv.imread("placa_4.jpg")
-if img is None:
-    raise FileNotFoundError("No se encontró img.")
-if img2 is None:
-    raise FileNotFoundError("No se encontró img2.")
+first_plate = cv.imread("placa_q.jpg")
+second_plate = cv.imread("placa_4.jpg")
+if first_plate is None:
+    raise FileNotFoundError("No se encontró 'first_plate '.")
+if second_plate is None:
+    raise FileNotFoundError("No se encontró 'second_plate'.")
 
 print("_________________________________________________________________________________")
 print("Lectura de Imagen 1 (presiona 0 para continuar):")
 cv.waitKey(0)
-filter_and_read(img)
+filter_and_read(first_plate )
 print("_________________________________________________________________________________")
 print("Lectura de Imagen 2 (presiona 0 para continuar):")
 cv.waitKey(0)
-filter_and_read(img2)
+filter_and_read(second_plate)
 print("_________________________________________________________________________________")
