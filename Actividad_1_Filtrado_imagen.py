@@ -1,3 +1,10 @@
+"""
+Módulo para detección y lectura OCR de placas usando OpenCV y EasyOCR.
+
+Contiene la función `filter_and_read` que aplica filtros y realiza OCR
+sobre una imagen para extraer únicamente caracteres alfabéticos.
+"""
+
 import cv2 as cv
 import numpy as np
 import easyocr
@@ -11,12 +18,24 @@ warnings.filterwarnings(
 )
 
 def filter_and_read(img):
+    """
+    Aplica filtros para resaltado de texto en una imagen y ejecuta OCR.
 
-    # Imagen a Blanco y negro
+    Parámetros usados:
+        -img: Imagen de entrada.
+
+    Proceso:
+        1. Conversión a escala de grises.
+        2. Resaltar regiones oscuras (texto).
+        3. Desenfoque Gaussiano para eliminar texto diminuto.
+        4. Segundo umbral para refinar la nitidez del texto central.
+        5. Muestra cada etapa como ventana interactiva.
+        6. Ejecuta EasyOCR sobre la máscara final e imprime letras en consola.
+    """
+    # 1. Escala de grises
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    #Filtramos valores de negros, setting pixeles 
-    # con una intensidad MINUMA de 134 a 255
+    # 2. Filtro inverso para extraer texto oscuro
     thresh_val = 134
     _, mascara_binaria = cv.threshold(
         gray,
@@ -25,14 +44,13 @@ def filter_and_read(img):
         cv.THRESH_BINARY_INV
     )
 
-    #Aplicamos gausian blur de 31x31 para deshacernos de 
-    # la presencia de letras pequeñas (Darwinismo)
+    # 3. Desenfoque para eliminar texto muy pequeño
     blurred = cv.GaussianBlur(mascara_binaria, (31, 31), 0)
 
-    #Reaplicamos filtro
+    # 4. Segundo umbral 
     _, final_mask = cv.threshold(blurred, 50, 255, cv.THRESH_BINARY)
 
-    #Slideshow de progreso
+    # 5. Mostrar cada paso 
     cv.imshow("Original", img)
     cv.waitKey(0)
     cv.imshow("Blanco y Negro", mascara_binaria)
@@ -43,16 +61,15 @@ def filter_and_read(img):
     cv.waitKey(0)
     cv.destroyAllWindows()
 
-    #Lectua de imagen
+    # 6. Lectura OCR y filtrado de caracteres alfabéticos
     reader = easyocr.Reader(['en'], gpu=True, verbose=False)
     texts = reader.readtext(final_mask, detail=0)
     detected = " ".join(texts)
 
     print("Texto encontrado:\n")
-    #Final
     letters = [c for c in detected if c.isalpha()]
     if not letters:
-        print("No se detecto texto.")
+        print("No se detectó texto.")
     else:
         print("".join(letters))
         
