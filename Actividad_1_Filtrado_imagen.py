@@ -15,11 +15,18 @@ def filter_and_read(img):
     # Imagen a Blanco y negro
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    #Filtramos valores de negros, setting pixeles con una intensidad MINUMA de 134 a 255
+    #Filtramos valores de negros, setting pixeles 
+    # con una intensidad MINUMA de 134 a 255
     thresh_val = 134
-    _, mascara_binaria = cv.threshold(gray, thresh_val, 255, cv.THRESH_BINARY_INV)
+    _, mascara_binaria = cv.threshold(
+        gray,
+        thresh_val,
+        255,
+        cv.THRESH_BINARY_INV
+    )
 
-    #Aplicamos gausian blur de 31x31 para deshacernos de la presencia de letras pequeñas (Darwinismo)
+    #Aplicamos gausian blur de 31x31 para deshacernos de 
+    # la presencia de letras pequeñas (Darwinismo)
     blurred = cv.GaussianBlur(mascara_binaria, (31, 31), 0)
 
     #Reaplicamos filtro
@@ -56,12 +63,14 @@ if first_plate is None:
 if second_plate is None:
     raise FileNotFoundError("No se encontró 'second_plate'.")
 
-print("_________________________________________________________________________________")
+line="_______________________________________________________________"
+
+print(line)
 print("Lectura de Imagen 1 (presiona 0 para continuar):")
 cv.waitKey(0)
 filter_and_read(first_plate )
-print("_________________________________________________________________________________")
+print(line)
 print("Lectura de Imagen 2 (presiona 0 para continuar):")
 cv.waitKey(0)
 filter_and_read(second_plate)
-print("_________________________________________________________________________________")
+print(line)
